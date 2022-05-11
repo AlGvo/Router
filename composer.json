@@ -1,0 +1,20 @@
+{
+    "name": "algvo/router",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Gvozdev",
+            "email": "dp161185gav@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "aigletter/contracts": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Algvo\\Router\\": "src/"
+        }
+    }
+}

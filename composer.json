@@ -10,7 +10,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "aigletter/contracts": "dev-master"
+        "aigletter/contracts": "^1.0.1"
     },
     "autoload": {
         "psr-4": {

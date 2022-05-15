@@ -25,7 +25,6 @@ class Router implements \Aigletter\Contracts\Routing\RouteInterface
         if (class_exists($controller) && isset($method) && method_exists($controller, $method)) {
             $controller = new $controller();
             return function () use ($controller, $method) {
-                $callback = [$controller, $method];
                 $reflectionMethod = new \ReflectionMethod($controller, $method);
                 $arguments = $this->resolveParameters($reflectionMethod);
                 $reflectionMethod->invokeArgs($controller, $arguments);

@@ -35,9 +35,9 @@ class Router implements \Aigletter\Contracts\Routing\RouteInterface
         echo '404 Not found';
         die();
     }
-    protected function resolveParameters($reflectionMethod)
+    protected function resolveParameters($reflectionMethod): array
     {
-
+        $arguments = [];
         foreach ($reflectionMethod->getParameters() as $parameters) {
             $name = $parameters->getName();
             $type = $parameters->getType();

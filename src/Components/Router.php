@@ -3,18 +3,41 @@
 
 namespace Algvo\Router\Components;
 
+/**
+ * Класс Routing. Помогает проверить есть ли в системе вызываемый класс и открыть его
+ * @author AlGvo <dp161185gav@gmail,com>
+ * @version 1.0
+ * @package Artpix
 
+ */
 class Router implements \Aigletter\Contracts\Routing\RouteInterface
 {
 
-
+    /**
+     * @var string
+     * @access private
+     */
     private string $namespace;
 
+    /**
+     * Конструктор класса Routing
+     * @param string $namespace
+     * @access public
+     */
     public function __construct(string $namespace)
     {
         $this->namespace = $namespace;
     }
 
+    /**
+     * Метод определения рредиректа
+     *
+     * Метод с помощью которого из URI определяем класс который нужно найти и метод который нужно вызвать.
+     * Так же внутри вызывается метод resolveParameters которій определяет переданні ли необходиміе параметрі
+     * @param string $uri
+     * @return callable
+     * @access public
+     */
     public function route(string $uri): callable
     {
         $uri = substr($uri, 0, strpos($uri, "?"));
@@ -30,10 +53,22 @@ class Router implements \Aigletter\Contracts\Routing\RouteInterface
                 $reflectionMethod->invokeArgs($controller, $arguments);
             };
         }
+
         http_response_code(404);
         echo '404 Not found';
         die();
     }
+
+    /**
+     * Рефлекшен метод который позволяет найти какие параметры (переменные) принимает переданный метод
+     *
+     * Методом перебора проверяем есть ли в нашем GET запросе параметры которые ожидает заданный метод
+     * Все найденные параметры сохраняются в отдельный массив, который возвращается из этой функции
+     *
+     * @param $reflectionMethod
+     * @return array
+     * @access protected
+     */
     protected function resolveParameters($reflectionMethod): array
     {
         $arguments = [];

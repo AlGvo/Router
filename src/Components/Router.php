@@ -3,12 +3,12 @@
 
 namespace Algvo\Router\Components;
 
-/**
+use Algvo\Router\Exceptions\BadRequestException;
+use Algvo\Router\Exceptions\NotFoundException;/**
  * Класс Routing. Помогает проверить есть ли в системе вызываемый класс и открыть его
  * @author AlGvo <dp161185gav@gmail,com>
  * @version 1.0
  * @package Artpix
-
  */
 class Router implements \Aigletter\Contracts\Routing\RouteInterface
 {
@@ -37,26 +37,38 @@ class Router implements \Aigletter\Contracts\Routing\RouteInterface
      * @param string $uri
      * @return callable
      * @access public
+     * @throws NotFoundException
+     * @throws BadRequestException
      */
     public function route(string $uri): callable
     {
-        $uri = substr($uri, 0, strpos($uri, "?"));
-        $segments = explode("/", $uri);
-        array_shift($segments);
-        $controller = $this->namespace. ucfirst($segments[0]);
-        $method = $segments[1];
-        if (class_exists($controller) && isset($method) && method_exists($controller, $method)) {
-            $controller = new $controller();
-            return function () use ($controller, $method) {
-                $reflectionMethod = new \ReflectionMethod($controller, $method);
-                $arguments = $this->resolveParameters($reflectionMethod);
-                $reflectionMethod->invokeArgs($controller, $arguments);
-            };
+        if (str_contains($uri, '?')){
+            $uri = substr($uri, 0, strpos($uri, "?"));
         }
 
-        http_response_code(404);
-        echo '404 Not found';
-        die();
+        /** Разделяем uri на вызываемый класс и метод
+         * @var array $segments
+         */
+        $segments = explode("/", $uri);
+
+        array_shift($segments);
+
+        $controller = $this->namespace.ucfirst($segments[0]);
+        $method = $segments[1];
+
+        if (!class_exists($controller) || !isset($method)) {
+            throw new NotFoundException();
+        }
+        if (!method_exists($controller, $method)) {
+            throw new BadRequestException();
+        }
+        $controller = new $controller();
+
+        return function () use ($controller, $method) {
+            $reflectionMethod = new \ReflectionMethod($controller, $method);
+            $arguments = $this->resolveParameters($reflectionMethod);
+            $reflectionMethod->invokeArgs($controller, $arguments);
+        };
     }
 
     /**

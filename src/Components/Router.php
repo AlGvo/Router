@@ -53,10 +53,10 @@ class Router implements \Aigletter\Contracts\Routing\RouteInterface
 
         array_shift($segments);
 
-        $controller = $this->namespace.ucfirst($segments[0]);
-        $method = $segments[1];
+        $controller = $this->namespace.ucfirst($segments[0] ?? '');
+        $method = $segments[1] ?? null;
 
-        if (!class_exists($controller) || !isset($method)) {
+        if (!class_exists($controller) || !$method) {
             throw new NotFoundException();
         }
         if (!method_exists($controller, $method)) {
